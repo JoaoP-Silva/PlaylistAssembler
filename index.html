@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="app.js"></script>
+  <title>PlaylistAssembler</title>
+</head>
+<body onload="onPageLoad()"> 
+
+  <h1>PlaylistAssembler</h1>
+  <h2>O montador automático de playlists.</h2>
+  <p>Digite o título da playlist</p>
+  <input type="text" id="plTitle"> 
+  <p><label for="musicList">Digite as músicas da playlist separadas por quebra de linha</label></p>
+  <textarea id="musicList" name="musicList" rows="10" cols="35"></textarea> <br>
+  <input type="button" value="Montar no Spotify" onclick="requestAuthSpotify()" id="spotifyBtn"> <br>
+  <input type="button" value="Montar no Deezer" id="deezerBtn"> <br>
+  <input type="button" value="Montar no AppleMusic" id="appleBtn"> 
+
+
+</body>
+</html>
