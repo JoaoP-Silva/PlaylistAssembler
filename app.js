@@ -1,19 +1,28 @@
 var redirect_uri = 'http://127.0.0.1:5500/index.html'; 
 
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
-var client_secret = '';
+var client_secret = 'c4f43675ff84496780d6b1fb2ec1e3b3';
 var accessToken = null;
 var refreshToken = null;
 
 const TOKEN = "https://accounts.spotify.com/api/token";
 const AUTHORIZE_SPOTIFY = "https://accounts.spotify.com/authorize"
 const SPFY_SEARCH = "https://api.spotify.com/v1/search";
+const SPFY_PROFILE = "https://api.spotify.com/v1/me"
+const SPFY_CREATE_PLAYLIST = "https://api.spotify.com/v1/users/"
+
+//User id for modify his profile
+var userId;
+
+//Playlist id to add songs into
+var playlistId;
 
 //Lists for alocate all songs
 var songList = [];
 var id_list = [];
 //String for playlist title
 var playlistTitle;
+var playlistId;
 
 //Variable string for the list of songs
 /** Integer "streaming" to indicate the streaming service, obeys the following pattern: 
@@ -53,6 +62,7 @@ function setPlaylistInfo(){
 
 
 function onPageLoad(){
+    playlistTitle = localStorage.getItem("playlist_title");
     streaming = parseInt(localStorage.getItem("streaming"));
     var queryString = window.location.search 
     if(queryString.length > 0){
@@ -61,7 +71,9 @@ function onPageLoad(){
             case 1:
                 spfy_handleRedirect(queryString);
                 //debugger;
-                spfy_genPlaylist();
+                spfy_getUserId();
+                spfy_createPlaylist();
+                spfy_addItensToPlaylist();
         }
         
     }
@@ -128,7 +140,7 @@ function requestAuthSpotify(){
     url += "&response_type=code";
     url += "&redirect_uri=" + encodeURI(redirect_uri);
     url += "&show_dialog=true";
-    url += "&scope=playlist-modify-public";
+    url += "&scope=playlist-modify-public user-read-private";
     window.location.href = url;
 }
 
@@ -149,7 +161,6 @@ function handleSpfySearchRes(){
         console.log(data);
         console.log(songId);
         if(songId == null){alert("Music not found.")}
-        debugger;
         id_list.push(songId);
     }
     else {
@@ -158,7 +169,7 @@ function handleSpfySearchRes(){
     }
 }
 
-function spfy_genPlaylist(){
+function spfy_addItensToPlaylist(){
     songList = JSON.parse(localStorage.getItem("songList"));
     localStorage.removeItem("songList");
     //Get all music spotify Ids
@@ -169,9 +180,46 @@ function spfy_genPlaylist(){
         url += "&limit=1";
         spfy_callAPI('GET', url, null, handleSpfySearchRes);
     }
-    
-    playlistTitle = localStorage.getItem("playlist_title");
-    localStorage.removeItem("playlistTitle");
-    if(playlistTitle == null){playlistTitle = "QUEBRAPASSOS BALA DE EUCALIPTO"}
+}
 
+function handleSpfyCreatePlaylistRes(){
+    if(this.status == 201){
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
+}
+
+function spfy_createPlaylist(){
+    userId = localStorage.getItem("user_id");
+    playlistTitle = localStorage.getItem("playlist_title");
+    debugger;
+    localStorage.removeItem("playlistTitle");
+    if(playlistTitle == ""){playlistTitle = "QUEBRAPASSOS BALA DE EUCALIPTO"}
+    let desc = "Playlist created using PlaylistAssembler."
+    let url = SPFY_CREATE_PLAYLIST + userId + "/playlists";
+    let body = JSON.stringify({"name": playlistTitle, "description": desc});
+
+    debugger;
+    spfy_callAPI('POST', url, body, handleSpfyCreatePlaylistRes);
+}
+
+function spfy_getUserId(){
+    spfy_callAPI('GET', SPFY_PROFILE, null, handleSpfyProfileRes);
+}
+
+function handleSpfyProfileRes(){
+    if ( this.status == 200 ){
+        var data = JSON.parse(this.responseText);
+        var data = JSON.parse(this.responseText);
+        userId = data.id;
+        localStorage.setItem("user_id", userId);
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
 }
