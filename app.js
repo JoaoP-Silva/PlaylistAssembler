@@ -1,7 +1,7 @@
 var redirect_uri = 'http://127.0.0.1:5500/index.html'; 
 
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
-var client_secret = 'c4f43675ff84496780d6b1fb2ec1e3b3';
+var client_secret = '';
 var accessToken = null;
 var refreshToken = null;
 
