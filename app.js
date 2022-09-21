@@ -185,7 +185,7 @@ function handleSpfySearchRes(){
         console.log(data);
         console.log(songId);
         if(songId == null){alert("Music not found.")}
-        spfy_addSong(songId);
+        setTimeout(spfy_addSong(songId), 500);
     }
     else {
         console.log(this.responseText);
