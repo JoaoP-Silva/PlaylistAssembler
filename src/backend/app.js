@@ -70,7 +70,7 @@ export function onPageLoad(){
     streaming = parseInt(localStorage.getItem("streaming"));
     var queryString = window.location.search 
     if(queryString.length > 0){
-        if(streaming == null){window.history.pushState("", "", redirect_uri);}
+        if(streaming === null){window.history.pushState("", "", redirect_uri);}
         switch(streaming){
             case 1:
                 debugger;
