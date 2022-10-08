@@ -1,43 +1,43 @@
+import { useState } from "react";
 import "../Css/SearchBox.css"
 
-const SearchBox = ({ color }) => {
-    var isActive = false
-    var style = {
-        background: color,
-        color: "#fff"
+const SearchBox = () => {
+    let [style, setStyle] = useState({ color: "#1DB954", background: "fff" })
+    let [active, setActive] = useState("")
+    let debounceTimer;
+
+    const logDebounceResult = () => {
+        console.log(document.querySelector("input").value)
     }
+
+    const debounce = (callback, time) => {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(callback, time);
+    };
+
     const clickOnMusicIcon = () => {
-        const searchBox = document.querySelector(".search-box");
-        const searchBtn = document.querySelector(".search-icon");
         const searchInput = document.querySelector("input");
-        isActive = !isActive
-        if (isActive) {
-            style = {
-                background: color,
+        if (active.length === 0) {
+            setActive("active")
+            setStyle({
+                background: "#1DB954",
                 color: "#fff"
-            }
-            searchBox.classList.add("active");
-            searchBtn.classList.add("active");
-            searchInput.classList.add("active");
+            })
         } else {
-            style = {
+            setActive("")
+            setStyle({
                 background: "#fff",
-                color
-            }
-            searchBox.classList.remove("active");
-            searchBtn.classList.remove("active");
-            searchInput.classList.remove("active");
+                color: "#1DB954"
+            })
         }
-        searchInput.focus()
+        searchInput.focus();
     }
 
     return (
-        <div className="search-box" style={style}>
-            <input type="text" placeholder="Type to search.." />
-            <div className="search-icon" onClick={clickOnMusicIcon}>
+        <div className={`search-box ${active}`}>
+            <input type="text" placeholder="Type to search.." onChange={() => debounce(logDebounceResult, 1000)} className={`${active}`}/>
+            <div className={`search-icon ${active}`} onClick={clickOnMusicIcon} style={style}>
                 <i className="fas fa-music"></i>
-            </div>
-            <div className="search-data">
             </div>
         </div>
     )

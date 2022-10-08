@@ -55,8 +55,6 @@
   text-align: center;
   line-height: 60px;
   font-size: 22px;
-  background: #fff;
-  color: #1DB954;
   cursor: pointer;
   z-index: 1;
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -67,8 +65,6 @@
   line-height: 50px;
   width: 50px;
   font-size: 20px;
-  background: #1DB954;
-  color: #fff;
   transform: translateY(-50%) rotate(360deg);
 }
 .search-box .search-data{
