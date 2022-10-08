@@ -1,12 +1,17 @@
-import { Container } from "react-bootstrap";
 import "../Css/App.css"
 import SearchBox from "../Components/SearchBox";
+import { useState } from "react";
 
 function App() {
-  const color = "#1DB954"
+  let [playlistName, setPlayListName] = useState("")
+  const searchBoxCallBack = (data) => {
+    setPlayListName(data)
+  }
+
   return (
     <div className="app">
-      <SearchBox color = {color}></SearchBox>
+      <h1 className="playlistName">{playlistName}</h1>
+      <SearchBox callback = {searchBoxCallBack}></SearchBox>
     </div>
   );
 }

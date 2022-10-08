@@ -2,5 +2,14 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: #191414;
+    background-color: #000000;
+}
+
+.playlistName {
+    position:absolute;
+    top: 30%;
+    width: 100%;
+    text-align: center;
+    line-break: auto;
+    color: white
 }
