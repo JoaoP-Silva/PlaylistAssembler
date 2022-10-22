@@ -1,6 +1,8 @@
 import "../Css/App.css"
 import SearchBox from "../Components/SearchBox";
 import { useState } from "react";
+import IconsGroup from "../Components/IconsGroup";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   let [playlistName, setPlayListName] = useState("")
@@ -10,8 +12,12 @@ function App() {
 
   return (
     <div className="app">
-      <h1 className="playlistName">{playlistName}</h1>
-      <SearchBox callback = {searchBoxCallBack}></SearchBox>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={< IconsGroup/>} />
+          <Route path="/playlist" element={<SearchBox />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
