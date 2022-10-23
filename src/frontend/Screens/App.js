@@ -13,11 +13,15 @@ function App() {
     navigate("/playlist")
   }
 
+  const createPlaylistCompletion = (playlistName, songs) => {
+    console.log(playlistName, songs)
+  }
+
   return (
     <div className="app">
         <Routes>
           <Route path="/" element={<IconsGroup authCompletion={authCompletion}/>} />
-          <Route path="/playlist" element={<SearchBox/>} />
+          <Route path="/playlist" element={<SearchBox createPlaylistCompletion={createPlaylistCompletion}/>} />
         </Routes>
     </div>
   );

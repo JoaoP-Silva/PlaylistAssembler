@@ -3,7 +3,7 @@ import Input from "./Input";
 import TextField from "./TextField";
 import "../Css/SearchBox.css"
 
-const SearchBox = ({ callback }) => {
+const SearchBox = ({ createPlaylistCompletion }) => {
     let [isInput, setIsInput] = useState(true)
     let [playlistName, setPlayListName] = useState("")
 
@@ -15,9 +15,13 @@ const SearchBox = ({ callback }) => {
         setIsInput(!isInput)
     }
 
+    const textFieldCompletion = (songs) => {
+        createPlaylistCompletion(playlistName, songs)
+    }
+
     const makeInput = () =>  isInput ?
      <Input playlistNameCallBack={changePlaylistName} enterPressedCallBack={enterPressedCallBack}/>:
-     <TextField/>
+     <TextField textFieldCompletion={textFieldCompletion}/>
 
     return (
         <div>
