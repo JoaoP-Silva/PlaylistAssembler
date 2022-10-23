@@ -4,17 +4,18 @@ import SearchBox from "../Components/SearchBox";
 import IconsGroup from "../Components/IconsGroup";
 
 import { Routes, Route, useNavigate } from "react-router-dom";
+import { createPlaylist } from "../../backend/app";
 
 function App() {
 
   const navigate = useNavigate()
 
-  const authCompletion = () => {
+  const authCompletion = (token) => {
     navigate("/playlist")
   }
 
   const createPlaylistCompletion = (playlistName, songs) => {
-    console.log(playlistName, songs)
+    createPlaylist(playlistName, songs)
   }
 
   return (

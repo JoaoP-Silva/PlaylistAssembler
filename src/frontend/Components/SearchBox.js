@@ -2,6 +2,7 @@ import { useState } from "react";
 import Input from "./Input";
 import TextField from "./TextField";
 import "../Css/SearchBox.css"
+import { onPageLoad } from "../../backend/app"
 
 const SearchBox = ({ createPlaylistCompletion }) => {
     let [isInput, setIsInput] = useState(true)
@@ -24,7 +25,7 @@ const SearchBox = ({ createPlaylistCompletion }) => {
      <TextField textFieldCompletion={textFieldCompletion}/>
 
     return (
-        <div>
+        <div onLoad={onPageLoad()}>
             <h1 className="search-box-h1">{playlistName}</h1>
             {makeInput()}
         </div>
