@@ -18,6 +18,7 @@ const SearchBox = ({ createPlaylistCompletion }) => {
 
     const textFieldCompletion = (songs) => {
         createPlaylistCompletion(playlistName, songs)
+        console.log(songs)
     }
 
     const makeInput = () =>  isInput ?
@@ -26,7 +27,7 @@ const SearchBox = ({ createPlaylistCompletion }) => {
 
     return (
         <div onLoad={onPageLoad()}>
-            <h1 className="search-box-h1">{playlistName}</h1>
+            <h1 className="search-box-h1"  onClick={()=>setIsInput(true)}>{playlistName}</h1>
             {makeInput()}
         </div>
     )

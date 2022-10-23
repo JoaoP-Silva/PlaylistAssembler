@@ -36,7 +36,6 @@ const Input = ( { playlistNameCallBack, enterPressedCallBack } ) => {
     const changePlaylistName = (event) => {
         const searchInput = document.querySelector("input");
         playlistNameCallBack(searchInput.value)
-        console.log(event, searchInput.value)
     }
 
     return (<div className={`search-box ${active}`}>
