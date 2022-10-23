@@ -1,7 +1,7 @@
 var redirect_uri = 'http://localhost:3000/playlist/'; 
 
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
-var client_secret = '';
+var client_secret = 'fa8a6d4894454303817d646a4faf3662';
 var accessToken = null;
 var refreshToken = null;
 
@@ -14,7 +14,7 @@ const SPFY_ADD_SONG = "https://api.spotify.com/v1/playlists/"
 
 //User id for modify his profile
 var userId;
-
+var flag = 0;
 
 //Lists for alocate all songs
 var songList = [];
@@ -39,7 +39,6 @@ export function onPageLoad(){
     if(queryString.length > 0){
         debugger;
         streaming = localStorage.getItem("streaming");
-        //if(streaming === null){window.history.pushState("", "", redirect_uri);}
         switch(streaming){
             case "1":
                 spfy_handleRedirect(queryString);
