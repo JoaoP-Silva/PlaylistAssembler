@@ -1,17 +1,28 @@
 import "../Css/App.css"
+
 import SearchBox from "../Components/SearchBox";
-import { useState } from "react";
+import IconsGroup from "../Components/IconsGroup";
+
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
-  let [playlistName, setPlayListName] = useState("")
-  const searchBoxCallBack = (data) => {
-    setPlayListName(data)
+
+  const navigate = useNavigate()
+
+  const authCompletion = () => {
+    navigate("/playlist")
+  }
+
+  const createPlaylistCompletion = (playlistName, songs) => {
+    console.log(playlistName, songs)
   }
 
   return (
     <div className="app">
-      <h1 className="playlistName">{playlistName}</h1>
-      <SearchBox callback = {searchBoxCallBack}></SearchBox>
+        <Routes>
+          <Route path="/" element={<IconsGroup authCompletion={authCompletion}/>} />
+          <Route path="/playlist" element={<SearchBox createPlaylistCompletion={createPlaylistCompletion}/>} />
+        </Routes>
     </div>
   );
 }
