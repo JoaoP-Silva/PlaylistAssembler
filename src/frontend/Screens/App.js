@@ -14,7 +14,6 @@ function App() {
   }
 
   const createPlaylistCompletion = (playlistName, songs) => {
-    console.log(playlistName, songs)
   }
 
   return (

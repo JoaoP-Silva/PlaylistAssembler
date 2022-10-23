@@ -3,7 +3,7 @@ import "../Css/TextField.css"
 const TextField = ({textFieldCompletion}) => {
 
     const runPlaylist = () => {
-        const songs = document.querySelector("textarea").value.split("\n")
+        const songs = document.querySelector("textarea").value.split("\n").filter((song) => song.length > 0)
         textFieldCompletion(songs)
     }
 
