@@ -4,6 +4,7 @@ import napsterMusicLogo from "../Media/napsterLogo.png"
 import "../Css/IconsGroup.css"
 import { Container, Row, Col } from "react-bootstrap"
 import { requestAuthSpotify } from "../../backend/app"
+import { requestAuthNapster } from "../../backend/app"
 
 const IconsGroup = ({authCompletion}) => {
 
@@ -16,7 +17,7 @@ const IconsGroup = ({authCompletion}) => {
             <Row className="justify-content-md-center">
                 <Col><img className="icon-logo" src={spotifyLogo} alt="spotify-logo" onMouseUp={() => requestAuthSpotify(spotifyCompletion)}></img></Col>
                 <Col><img className="icon-logo" src={deezerLogo} alt="deezer-logo" onMouseUp={() => requestAuthSpotify(spotifyCompletion)}></img></Col>
-                <Col><img className="icon-logo" src={napsterMusicLogo} alt="napster-logo" onMouseDown={() => requestAuthSpotify(spotifyCompletion)}></img></Col>
+                <Col><img className="icon-logo" src={napsterMusicLogo} alt="napster-logo" onMouseDown={() => requestAuthNapster(spotifyCompletion)}></img></Col>
             </Row>
         </Container>
     )
