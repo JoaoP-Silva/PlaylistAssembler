@@ -248,7 +248,7 @@ function handleNapsResponse(){
         }
     }
     else {
-        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+        window.location.href = `${baseUrl}error?message=${["Error"]}`;
     }
 }
 
@@ -302,12 +302,16 @@ function naps_call_api(method,url,body,callback){
 }
 
 function handleNapsAddRes(){
-    window.location.href = `${baseUrl}success?message=Playlist montada com sucesso.`;
+    var data = JSON.parse(this.responseText);
+    if(this.status === 204){
+        window.location.href = `${baseUrl}success?message=Playlist montada com sucesso.`;
+    }else{
+        window.location.href = `${baseUrl}error?message=${["Error"]}`
+    }
 }
 
 function naps_addSongs(ids){
     let url = NAPS_ADD_SONG;
-    playlistId = localStorage.getItem("playlist_id");
     url += playlistId + "/tracks";
     let body = '{"tracks":['+ids+']}';
     naps_call_api('POST', url, body, handleNapsAddRes);
@@ -316,13 +320,16 @@ function naps_addSongs(ids){
 function handleNapsSearchRes(){
     if(this.status === 200){
         var data = JSON.parse(this.responseText);
-        var id = data.search.data.tracks[0].id;
-        let songId = JSON.stringify({"id": id},);
-        songsIds.push(songId);
-        if(songList.length === songsIds.length){naps_addSongs(songsIds);}
+        if(data.meta.totalCount === 0){alert("Music not found."); not_found++;}
+        else{
+            var id = data.search.data.tracks[0].id;
+            let songId = JSON.stringify({"id": id},);
+            songsIds.push(songId);
+        }
+        if(songList.length === songsIds.length + not_found){naps_addSongs(songsIds);}
     }
     else {
-        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+        window.location.href = `${baseUrl}error?message=${["Error"]}`;
     }
 }
 
@@ -345,7 +352,7 @@ function handleNapsCreatePlaylistRes(){
         napsSearch_Songs();
     }
     else {
-        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+        window.location.href = `${baseUrl}error?message=${["Error"]}`;
     }
 }
 
