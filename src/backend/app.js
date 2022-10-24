@@ -1,5 +1,5 @@
-var redirect_uri = 'http://localhost:3000/playlist/'; 
-
+var redirect_uri = 'http://localhost:3000/playlist/';
+var baseUrl = "http://localhost:3000/"
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
 var client_secret = 'fa8a6d4894454303817d646a4faf3662';
 var accessToken = null;
@@ -30,47 +30,45 @@ var playlistId;
  *   1 : spotify
  *   2 : deezer
  *   3 : applemusic
- */ 
-var streaming = -1; 
+ */
+var streaming = -1;
 
 
-export function onPageLoad(){
-    var queryString = window.location.search 
-    if(queryString.length > 0){
-        debugger;
+export function onPageLoad() {
+    var queryString = window.location.search
+    if (queryString.length > 0) {
         streaming = localStorage.getItem("streaming");
-        switch(streaming){
+        switch (streaming) {
             case "1":
                 spfy_handleRedirect(queryString);
+                break;
+            default:
+                break;
         }
-        
+
     }
 }
 
-
-
-
 //Funcoes API Spotify
-function handleSpfyAuthResponse(){
-    if ( this.status === 200 ){
-        var data = JSON.parse(this.responseText);
-        if ( data.access_token !== undefined ){
+function handleSpfyAuthResponse() {
+    var data = JSON.parse(this.responseText);
+    if (this.status === 200) {
+        if (data.access_token !== undefined) {
             accessToken = data.access_token;
             localStorage.setItem("access_token", accessToken);
         }
-        if ( data.refresh_token  !== undefined ){
+        if (data.refresh_token !== undefined) {
             refreshToken = data.refresh_token;
             localStorage.setItem("refresh_token", refreshToken);
         }
         spfy_getUserId()
     }
     else {
-        console.log(this.responseText);
-        alert(this.responseText);
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
     }
 }
 
-function callAuthorizationApi(body){
+function callAuthorizationApi(body) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", TOKEN, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -80,9 +78,9 @@ function callAuthorizationApi(body){
     xhr.onload = handleSpfyAuthResponse
 }
 
-async function spfy_fetchAccessToken(code){
+async function spfy_fetchAccessToken(code) {
     let body = "grant_type=authorization_code";
-    body += "&code=" + code; 
+    body += "&code=" + code;
     body += "&redirect_uri=" + encodeURI(redirect_uri);
     body += "&client_id=" + spotify_client_id;
     body += "&client_secret=" + client_secret;
@@ -90,14 +88,14 @@ async function spfy_fetchAccessToken(code){
 }
 
 
-function spfy_handleRedirect(qstring){
+function spfy_handleRedirect(qstring) {
     const urlparam = new URLSearchParams(qstring);
     var spfy_code = urlparam.get('code');
     spfy_fetchAccessToken(spfy_code);
     window.history.pushState("", "", redirect_uri);
 }
 
-export function requestAuthSpotify(){
+export function requestAuthSpotify() {
     streaming = 1;
     localStorage.setItem("streaming", streaming.toString());
     //setPlaylistInfo();
@@ -110,7 +108,7 @@ export function requestAuthSpotify(){
     window.location.href = url;
 }
 
-function spfy_callAPI(method, url, body, callback){
+function spfy_callAPI(method, url, body, callback) {
     accessToken = localStorage.getItem("access_token");
     let xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
@@ -120,43 +118,43 @@ function spfy_callAPI(method, url, body, callback){
     xhr.onload = callback;
 }
 
-function handleSpfyAddRes(){
+function handleSpfyAddRes() {
     var data = JSON.parse(this.responseText);
-    if(this.status == 201){alert("Playlist montada com sucesso.")}
+    if (this.status === 201) {
+        window.location.href = `${baseUrl}success?message=Playlist montada com sucesso.`;
+    }
     else {
-        console.log(this.responseText);
-        alert(this.responseText);
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
     }
 }
 
-function spfy_addSongs(ids){
+function spfy_addSongs(ids) {
     let url = SPFY_ADD_SONG;
     url += playlistId + '/tracks';
-    let body = JSON.stringify({"uris" : ids});
+    let body = JSON.stringify({ "uris": ids });
     debugger;
     spfy_callAPI('POST', url, body, handleSpfyAddRes);
 }
 
-function handleSpfySearchRes(){
-    if(this.status == 200){
-        var data = JSON.parse(this.responseText);
+function handleSpfySearchRes() {
+    var data = JSON.parse(this.responseText);
+    if (this.status === 200) {
         var songId = "spotify:track:";
-        if(data.tracks.total == 0){alert("Music not found."); not_found++;}
+        if (data.tracks.total === 0) { alert("Music not found."); not_found++; }
         else {
             songId += data.tracks.items[0].id.toString();
             songsIds.push(songId);
         }
-        if(songList.length == songsIds.length + not_found){spfy_addSongs(songsIds);}
+        if (songList.length === songsIds.length + not_found) { spfy_addSongs(songsIds); }
     }
     else {
-        console.log(this.responseText);
-        alert(this.responseText);
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
     }
 }
 
-function spfy_searchSongs(){
+function spfy_searchSongs() {
     //Get all music spotify Ids
-    for(var i in songList){
+    for (var i in songList) {
         let url = SPFY_SEARCH + "?q=";
         url += songList[i];
         url += "&type=track";
@@ -165,53 +163,53 @@ function spfy_searchSongs(){
     }
 }
 
-function handleSpfyCreatePlaylistRes(){
-    if(this.status === 201){
-        var data = JSON.parse(this.responseText);
+function handleSpfyCreatePlaylistRes() {
+    var data = JSON.parse(this.responseText);
+    if (this.status === 201) {
         playlistId = data.id;
         localStorage.setItem("playlist_id", playlistId);
         spfy_searchSongs();
     }
     else {
-        console.log(this.responseText);
-        alert(this.responseText);
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
     }
 }
 
-export function createPlaylist(title, songs){
+export function createPlaylist(title, songs) {
     debugger;
     playlistTitle = title;
     songList = songs;
     localStorage.setItem("songList", songList);
-    switch(streaming){
+    switch (streaming) {
         case "1":
             spfy_createPlaylist();
+            break;
+        default:
+            break;
     }
 }
 
 
-function spfy_createPlaylist(){
-    if(playlistTitle == ""){playlistTitle = "QUEBRAPASSOS BALA DE EUCALIPTO";}
+function spfy_createPlaylist() {
+    if (playlistTitle === "") { playlistTitle = "QUEBRAPASSOS BALA DE EUCALIPTO"; }
     let desc = "Playlist created using PlaylistAssembler.";
     let url = SPFY_CREATE_PLAYLIST + userId + "/playlists";
-    let body = JSON.stringify({"name": playlistTitle + "" , "description": desc});
+    let body = JSON.stringify({ "name": playlistTitle + "", "description": desc });
     spfy_callAPI('POST', url, body, handleSpfyCreatePlaylistRes);
 }
 
 
-function handleSpfyProfileRes(){
-    if ( this.status === 200 ){
-        var data = JSON.parse(this.responseText);
+function handleSpfyProfileRes() {
+    var data = JSON.parse(this.responseText);
+    if (this.status === 200) {
         userId = data.id;
         localStorage.setItem("user_id", userId);
-        console.log(userId);
     }
     else {
-        console.log(this.responseText);
-        alert(this.responseText);
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
     }
 }
 
-function spfy_getUserId(){
+function spfy_getUserId() {
     spfy_callAPI('GET', SPFY_PROFILE, null, handleSpfyProfileRes);
 }
