@@ -29,7 +29,7 @@ var playlistId;
  *  -1 : not setted
  *   1 : spotify
  *   2 : deezer
- *   3 : applemusic
+ *   3 : napster
  */
 var streaming = -1;
 
