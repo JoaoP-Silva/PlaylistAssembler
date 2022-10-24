@@ -1,5 +1,17 @@
 var redirect_uri = 'http://localhost:3000/playlist/';
 var baseUrl = "http://localhost:3000/"
+
+var NAPS_API_KEY = 'NzI1YmMzMmMtMTBmOC00NjhlLTk5NWQtM2YyZTcwYjE5ZDE3'
+var NAPS_API_SECRET = 'NmIwZmYwMmUtMDVhMi00MGQyLWFhNGUtZWM3YzNkNWQ0ZGQy'
+var accessTokenN = null;
+var refreshTokenN = null;
+
+const NAPS_API = "https://api.napster.com"
+const TOKEN_NAPS = "https://api.napster.com/oauth/access_token"
+const AUTH_NAPS = "https://api.napster.com/oauth/authorize"
+const NAPS_CREATE_PLAYLIST = "https://api.napster.com/v2.2/me/library/playlists"
+const NAPS_ADD_SONG = "https://api.napster.com/v2.2/me/library/playlists/"
+
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
 var client_secret = '';
 var accessToken = null;
@@ -42,10 +54,12 @@ export function onPageLoad() {
             case "1":
                 spfy_handleRedirect(queryString);
                 break;
+            case "3":
+                naps_handleRedirect(queryString);
+                break;
             default:
                 break;
         }
-
     }
 }
 
@@ -184,6 +198,9 @@ export function createPlaylist(title, songs) {
         case "1":
             spfy_createPlaylist();
             break;
+        case "3":
+            naps_create_playlist();
+            break;
         default:
             break;
     }
@@ -212,4 +229,129 @@ function handleSpfyProfileRes() {
 
 function spfy_getUserId() {
     spfy_callAPI('GET', SPFY_PROFILE, null, handleSpfyProfileRes);
+}
+
+//--------------------------FUNÇOES-NAPSTER---------------------------
+
+function handleNapsResponse(){
+    if ( this.status === 200 ){
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        var data = JSON.parse(this.responseText);
+        if ( data.access_token !== undefined ){
+            accessTokenN = data.access_token;
+            localStorage.setItem("access_token", accessTokenN);
+        }
+        if ( data.refresh_token  !== undefined ){
+            refreshTokenN = data.refresh_token;
+            localStorage.setItem("refresh_token", refreshTokenN);
+        }
+    }
+    else {
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+    }
+}
+
+function callAuthNaps(body){
+    let xhr2 = new XMLHttpRequest();
+    xhr2.open("POST",TOKEN_NAPS,true);
+    xhr2.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    let auth = NAPS_API_KEY + ':' + NAPS_API_SECRET;
+    xhr2.setRequestHeader('Authorization', 'Basic ' + btoa(auth));
+    xhr2.send(body);
+    xhr2.onload = handleNapsResponse
+}
+
+async function naps_fetch_token(naps_code){
+    let body = "client_id=" + NAPS_API_KEY;
+    body += "&client_secret=" + NAPS_API_SECRET;
+    body += "&response_type=code";
+    body += "&grant_type=authorization_code"; 
+    body += "&redirect_uri=" + encodeURI(redirect_uri);
+    body += "&code=" + naps_code;
+    await callAuthNaps(body);
+}
+
+
+function naps_handleRedirect(qstring){
+    const urlp2 = new URLSearchParams(qstring);
+    var naps_code = urlp2.get('code');
+    naps_fetch_token(naps_code);
+    window.history.pushState("","",redirect_uri);
+}
+
+export function requestAuthNapster(){
+    streaming = 3;
+    localStorage.setItem("streaming", streaming.toString());
+    //setPlaylistInfo();
+    let url = AUTH_NAPS;
+    url += "?client_id=" + NAPS_API_KEY;
+    url += "&redirect_uri=" + encodeURI(redirect_uri);
+    url += "&response_type=code";
+    window.location.href = url;
+}
+
+function naps_call_api(method,url,body,callback){
+    accessTokenN = localStorage.getItem("access_token");
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + accessTokenN)
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(body);
+    xhr.onload = callback;
+}
+
+function handleNapsAddRes(){
+    window.location.href = `${baseUrl}success?message=Playlist montada com sucesso.`;
+}
+
+function naps_addSongs(ids){
+    let url = NAPS_ADD_SONG;
+    playlistId = localStorage.getItem("playlist_id");
+    url += playlistId + "/tracks";
+    let body = '{"tracks":['+ids+']}';
+    naps_call_api('POST', url, body, handleNapsAddRes);
+}
+
+function handleNapsSearchRes(){
+    if(this.status === 200){
+        var data = JSON.parse(this.responseText);
+        var id = data.search.data.tracks[0].id;
+        let songId = JSON.stringify({"id": id},);
+        songsIds.push(songId);
+        if(songList.length === songsIds.length){naps_addSongs(songsIds);}
+    }
+    else {
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+    }
+}
+
+function napsSearch_Songs(){
+    //Get all music Napster Ids
+    for(var i in songList){
+        let url = NAPS_API + "/v2.2/search/verbose?query=";
+        url += songList[i];
+        url += "&type=track";
+        url += "&per_type_limit=1";
+        setTimeout(naps_call_api('GET', url, null, handleNapsSearchRes), 100);
+    }
+}
+
+function handleNapsCreatePlaylistRes(){
+    if(this.status === 201){
+        var data = JSON.parse(this.responseText);
+        playlistId = data.playlists[0].id;
+        localStorage.setItem("playlist_id", playlistId);
+        napsSearch_Songs();
+    }
+    else {
+        window.location.href = `${baseUrl}error?message=${data["error"]}`;
+    }
+}
+
+function naps_create_playlist(){
+    if(playlistTitle === ""){playlistTitle = "QUEBRAPASSOS BALA DE EUCALIPTO";}
+    let url = NAPS_CREATE_PLAYLIST
+    let body = JSON.stringify({"playlists" : {"name": playlistTitle}});
+    naps_call_api('POST', url, body, handleNapsCreatePlaylistRes);
 }
