@@ -302,7 +302,6 @@ function naps_call_api(method,url,body,callback){
 }
 
 function handleNapsAddRes(){
-    var data = JSON.parse(this.responseText);
     if(this.status === 204){
         window.location.href = `${baseUrl}success?message=Playlist montada com sucesso.`;
     }else{
