@@ -13,7 +13,7 @@ const NAPS_CREATE_PLAYLIST = "https://api.napster.com/v2.2/me/library/playlists"
 const NAPS_ADD_SONG = "https://api.napster.com/v2.2/me/library/playlists/"
 
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
-var client_secret = '';
+var client_secret = 'fa8a6d4894454303817d646a4faf3662';
 var accessToken = null;
 var refreshToken = null;
 
