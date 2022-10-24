@@ -1,7 +1,7 @@
 var redirect_uri = 'http://localhost:3000/playlist/';
 var baseUrl = "http://localhost:3000/"
 var spotify_client_id = '9f6d09d009334625827646cd4ac23d96';
-var client_secret = 'fa8a6d4894454303817d646a4faf3662';
+var client_secret = '';
 var accessToken = null;
 var refreshToken = null;
 
